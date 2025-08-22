@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+praw
+openai
+python-dotenv
+markdown
+pdfkit
