@@ -1,4 +1,3 @@
-
 "use client";
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
@@ -18,7 +17,7 @@ export default function Home() {
     setSolutions("");
     try {
       const res = await fetch(
-        `http://localhost:8000/scrape/${encodeURIComponent(subreddit)}?limit=5`
+        `${process.env.NEXT_PUBLIC_API_URL}/scrape/${encodeURIComponent(subreddit)}?limit=5`
       );
       if (!res.ok) {
         throw new Error("Subreddit not found or backend error.");
@@ -26,21 +25,27 @@ export default function Home() {
       const data = await res.json();
       setSummary(data.summary);
       setSolutions(data.solutions);
-    } catch (err: any) {
-      setError(err.message || "Unknown error");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Unknown error");
+      }
     } finally {
       setLoading(false);
     }
   };
 
   const handleDownload = () => {
-    window.open("http://localhost:8000/download/pdf", "_blank");
+    window.open(`${process.env.NEXT_PUBLIC_API_URL}/download/pdf`, "_blank");
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 p-4">
       <div className="max-w-xl w-full bg-gray-100 rounded-2xl shadow-2xl p-8 flex flex-col items-center">
-        <h1 className="text-4xl font-extrabold mb-8 text-center text-blue-700">Reddit Research Bot</h1>
+        <h1 className="text-4xl font-extrabold mb-8 text-center text-blue-700">
+          Reddit Research Bot
+        </h1>
         <form
           className="w-full flex flex-col items-center gap-4"
           onSubmit={handleSubmit}
@@ -69,7 +74,9 @@ export default function Home() {
         )}
 
         {error && (
-          <div className="mt-8 text-red-700 font-bold text-center text-lg">{error}</div>
+          <div className="mt-8 text-red-700 font-bold text-center text-lg">
+            {error}
+          </div>
         )}
 
         {summary && (
